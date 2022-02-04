@@ -26,10 +26,22 @@ def itoa_history():
 
     return df
 
+def eth_history():
+
+    db_config = read_config()
+
+    conn = MySQLConnection(**db_config)
+
+    sql_query = pd.read_sql_query ('''SELECT * FROM ethhistory ORDER BY date DESC''', conn)
+
+    df = pd.DataFrame(sql_query, columns = ['date', 'side', 'price', 'qty', 'quoteQty'])
+
+    return df
+
 
 st.title('Binance Trade History')
 
-coin = st.selectbox('Choose a coin', ('BTC', 'IOTA'))
+coin = st.selectbox('Choose a coin', ('BTC', 'IOTA', 'ETH'))
 
 
 if 'number of rows' not in st.session_state:
@@ -50,5 +62,8 @@ if coin == 'BTC':
 
 if coin == 'IOTA':
     trades = itoa_history()
+
+if coin == 'ETH':
+    trades = eth_history()
 
 st.table(trades.head(st.session_state['number of rows']))
